@@ -1,11 +1,11 @@
 ## [Name of Entry]
-### __Task__
+### Context
 
 
-### __Prompt__
+### Decision
 
 
-### __Reasoning/Concerns__
+### Consequence
 
 
-### __AI Summary__
+### Trade-Offs/Risks

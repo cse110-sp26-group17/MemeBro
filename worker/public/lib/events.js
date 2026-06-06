@@ -36,6 +36,7 @@ export function registerEvents(ctx) {
         getSelectedFaces, selectSingleFace, getRenderedSize,
         hasUnsavedStudioEdits, normalizeBox, setStatus, setError,
         applyManualTransform,
+        markFirstVisit,
     } = ctx;
 
     const loadErrorCodes = new Set(["FEATURE_DISABLED", "QUEUE_FULL", "RATE_LIMITED"]);
@@ -118,7 +119,10 @@ export function registerEvents(ctx) {
     });
 
     // ── Navigation ───────────────────────────────
-    dom.titleStartCta?.addEventListener("click", async () => { await showTemplateSelection(); });
+    dom.titleStartCta?.addEventListener("click", async () => {
+        markFirstVisit();
+        await showTemplateSelection();
+    });
     dom.backBtn.addEventListener("click", goBackToUploadChoices);
 
     dom.saveCta?.addEventListener("click", async () => {

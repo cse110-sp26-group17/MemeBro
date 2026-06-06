@@ -34,9 +34,26 @@ import * as AiPrompting from "./lib/ai-prompting.js";
 import * as ProjectActions from "./lib/projectActions.js";
 import { registerEvents } from "./lib/events.js";
 
+const FIRST_VISIT_STORAGE_KEY = "firstVisit";
+
 // ── Shared utilities ──────────────────────────
 
 function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+
+function getStoredFirstVisit() {
+  try {
+    return localStorage.getItem(FIRST_VISIT_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function markFirstVisit() {
+  state.firstVisit = true;
+  try {
+    localStorage.setItem(FIRST_VISIT_STORAGE_KEY, "true");
+  } catch {}
+}
 
 function normalizeBox(boxNatural, natural, rendered) {
   return {
@@ -309,6 +326,7 @@ registerEvents({
   // Misc
   getSelectedFaces, selectSingleFace, getRenderedSize,
   hasUnsavedStudioEdits, normalizeBox, setStatus, setError,
+  markFirstVisit,
 });
 
 // ── Test hooks (keep for test suite) ─────────
@@ -341,8 +359,15 @@ export const __testHooks = {
 // ── Init ──────────────────────────────────────
 
 async function init() {
+  state.firstVisit = getStoredFirstVisit();
   await Templates.loadTemplateCatalog({ loadTemplates });
-  projectActions.restoreAutoSave();
-  render();
+
+  if (!state.firstVisit) {
+    state.view = "home";
+    render();
+    return;
+  }
+
+  await showTemplateSelection();
 }
 init();

@@ -1249,7 +1249,7 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
     )).rejects.toThrow(/unsupported image sources/i);
   });
 
-  test("custom: project autosave is throttled, updates status, and restores after reload", async () => {
+  test("custom: project autosave is throttled, updates status, and shows onboarding after reload before first visit", async () => {
     vi.useFakeTimers();
     const { __testHooks } = await loadApp();
     await settleApp();
@@ -1284,8 +1284,8 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
 
     const reloaded = await loadApp();
     await settleApp();
-    expect(reloaded.__testHooks.state.view).toBe("studio");
-    expect(reloaded.__testHooks.state.editor.overlayText).toBe("autosaved text");
+    expect(reloaded.__testHooks.state.view).toBe("home");
+    expect(localStorage.getItem("memebro-project-autosave")).not.toBeNull();
   });
 
   test("custom: project autosave reports failed when storage is unavailable", async () => {

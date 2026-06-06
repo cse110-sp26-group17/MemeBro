@@ -49,6 +49,7 @@ export const state = {
     templateSearchQuery: "",
     uploadModalOpen: false,
     projectMenuOpen: false,
+    firstVisit: false,
     view: "home",
     isEditingMemeText: false,
     isSubmittingFaceSwap: false,

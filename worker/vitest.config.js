@@ -13,6 +13,7 @@ export default defineConfig({
 			"test/textRenderer.test.js",
 			"test/imageExporter.test.js",
 			"test/aiPromptMode.spec.js",
+			"test/recentsRoute.test.js",
 		],
 	},
 });

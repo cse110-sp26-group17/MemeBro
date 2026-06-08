@@ -51,20 +51,6 @@
   padding-bottom: 28px;
 }
 
-.template-screen .template-ai-prompt-cta {
-  position: fixed;
-  right: max(18px, calc((100vw - 1100px) / 2 - 148px));
-  bottom: 42px;
-  z-index: 68;
-}
-
-@media (max-width: 899px) {
-  .template-screen .template-ai-prompt-cta {
-    right: 18px;
-    bottom: 18px;
-  }
-}
-
 .template-card {
   display: grid;
   gap: 8px;

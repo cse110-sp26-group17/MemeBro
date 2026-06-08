@@ -203,15 +203,44 @@
         <div class="studio-sidebar">
           <section class="studio-actions vibe-container" aria-label="Template actions">
             <button id="open-upload-modal-cta" class="primary studio-action vibe-button" type="button"><span class="vibe-icon" aria-hidden="true">◎</span><span class="vibe-label">Face Swap</span></button>
+            <button id="ai-prompt-cta" class="pink-action studio-action vibe-button" type="button"><span class="vibe-icon" aria-hidden="true">✣</span><span class="vibe-label">AI Prompt</span></button>
           </section>
-          <section id="reset-confirmation" class="reset-confirmation hidden" aria-live="polite" aria-modal="true" role="dialog">
-            <div id="reset-confirmation-backdrop" class="reset-confirmation-backdrop"></div>
-            <div class="reset-confirmation-card">
-              <p>Warning: Reset cannot be undone. Are you sure?</p>
-              <div class="reset-confirmation-actions">
-                <button id="reset-cancel-cta" class="secondary" type="button">Cancel</button>
-                <button id="reset-confirm-cta" class="danger-action" type="button">Reset</button>
-              </div>
+        </div>
+        <section id="ai-prompt-panel" class="ai-prompt-panel hidden" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" aria-describedby="ai-prompt-description">
+          <div class="ai-prompt-header">
+            <div>
+              <p id="ai-prompt-title" class="vibe-title">AI Prompt</p>
+              <p id="ai-prompt-description" class="vibe-copy">Generate meme variants iteratively.</p>
+            </div>
+            <button id="ai-prompt-close-cta" class="toolbar-btn" type="button" aria-label="Close AI prompt">×</button>
+          </div>
+          <div id="ai-prompt-history" class="ai-prompt-history" aria-live="polite">
+            <article class="ai-prompt-message ai-prompt-message--system">
+              Tell me what to change — caption, mood, style, or face-swap direction.
+            </article>
+          </div>
+          <div id="ai-prompt-load-mode" class="ai-prompt-load-mode hidden" role="status" aria-live="polite">
+            <p id="ai-prompt-load-message">Generating your meme variant…</p>
+            <button id="ai-prompt-retry-cta" class="secondary hidden" type="button">Retry</button>
+          </div>
+          <form id="ai-prompt-form" class="ai-prompt-form">
+            <label class="sr-only" for="ai-prompt-input">Prompt AI for meme changes</label>
+            <div class="ai-prompt-input-wrap">
+              <textarea id="ai-prompt-input" rows="2" autocomplete="off" placeholder="Ask for a variant…" aria-label="Prompt AI for meme changes"></textarea>
+            </div>
+            <div class="ai-prompt-submit-wrap">
+              <p id="ai-prompt-word-count" class="ai-prompt-word-count hidden" aria-live="polite">0 / 500</p>
+              <button type="submit" class="primary">Send</button>
+            </div>
+          </form>
+        </section>
+        <section id="reset-confirmation" class="reset-confirmation hidden" aria-live="polite" aria-modal="true" role="dialog">
+          <div id="reset-confirmation-backdrop" class="reset-confirmation-backdrop"></div>
+          <div class="reset-confirmation-card">
+            <p>Reset will clear all your edits. Are you sure?</p>
+            <div class="reset-confirmation-actions">
+              <button id="reset-cancel-cta" class="secondary" type="button">Cancel</button>
+              <button id="reset-confirm-cta" class="danger-action" type="button">Reset</button>
             </div>
           </div>
         </section>
@@ -290,25 +319,6 @@
         </div>
         <section id="template-grid" class="template-grid" aria-live="polite"></section>
         <p id="template-empty" class="template-empty hidden">No matching templates.</p>
-        <button id="ai-prompt-cta" class="pink-action studio-action vibe-button template-ai-prompt-cta" type="button"><span class="vibe-icon" aria-hidden="true">✣</span><span class="vibe-label">AI Prompt</span></button>
-      </section>
-
-      <section id="ai-prompt-screen" class="ai-prompt-screen hidden" aria-label="AI prompt meme generation">
-        <form id="ai-prompt-form" class="ai-prompt-form ai-prompt-form--standalone">
-          <label class="sr-only" for="ai-prompt-input">Prompt AI for meme changes</label>
-          <div class="ai-prompt-input-wrap">
-            <textarea id="ai-prompt-input" rows="2" autocomplete="off" placeholder="What kind of meme would you like?" aria-label="Prompt AI for meme changes"></textarea>
-          </div>
-          <div class="ai-prompt-submit-wrap">
-            <p id="ai-prompt-word-count" class="ai-prompt-word-count hidden" aria-live="polite">0 / 500</p>
-            <button type="submit" class="primary ai-prompt-submit-cta" aria-label="Submit AI prompt">→</button>
-          </div>
-        </form>
-        <div id="ai-prompt-load-mode" class="ai-prompt-load-mode hidden" role="status" aria-live="polite">
-          <p id="ai-prompt-load-message">Generating your meme variant…</p>
-          <button id="ai-prompt-retry-cta" class="secondary hidden" type="button">Retry</button>
-        </div>
-        <div id="ai-prompt-history" class="ai-prompt-history hidden" aria-live="polite"></div>
       </section>
 
       <button id="continue-btn" type="button" disabled>Add Face →</button>

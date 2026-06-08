@@ -15,7 +15,6 @@ import {
   startCameraCapture, snapCameraPhoto, useReviewedPhoto,
   flipCamera, goBackToUploadChoices,
   startManualDrag, moveManualDrag, configureUpload,
-  routeAiImageToFaceSwap,
 } from "./lib/upload.js";
 import adapter from "./lib/faceDetect.js";
 
@@ -285,9 +284,6 @@ const projectActions = ProjectActions.configureProjectActions({
 
 registerEvents({
   dom, state, STATES, clamp,
-  routeAiImageToFaceSwap,
-  initializeEditorState,
-  persistEditorHistory: Editor.persistEditorHistory,
   // Camera / upload
   startCameraCapture, snapCameraPhoto, flipCamera,
   clearCameraStream, clearCameraReview,

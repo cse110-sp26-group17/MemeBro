@@ -24,7 +24,7 @@ export function registerEvents(ctx) {
         startManualFitFromSelection, startManualDrag, moveManualDrag,
         configureUpload, detectFaces,
         // Template
-        showTemplateSelection, renderTemplates,
+        showTemplateSelection, renderTemplates, openStudioForTemplate,
         // Text overlay
         createOrSelectTextAtPointer, selectTextObject, beginInlineTextEdit,
         finishInlineTextEdit, deleteMemeText, freezeCurrentTextItem,
@@ -39,7 +39,7 @@ export function registerEvents(ctx) {
         saveCurrentEditorMeme,
         // Face swap
         submitSelectedFace,
-        stopFaceSwapLoadingState,
+        startFaceSwapLoadingState, stopFaceSwapLoadingState,
         // Render
         render, renderOverlay,
         // Misc
@@ -50,12 +50,7 @@ export function registerEvents(ctx) {
 
     const loadErrorCodes = new Set(["FEATURE_DISABLED", "QUEUE_FULL", "RATE_LIMITED"]);
     // AI prompting owns its own listeners; events.js only coordinates cross-feature interactions.
-    const aiPrompting = configureAiPrompting({
-        dom,
-        state,
-        render,
-        routeAiImageToFaceSwap: ctx.routeAiImageToFaceSwap,
-    });
+    const aiPrompting = configureAiPrompting({ dom, state, render, recordEditorSnapshot });
 
     async function submitFaceSwapWithErrorHandling() {
         try {
@@ -164,18 +159,11 @@ export function registerEvents(ctx) {
     });
 
     // ── Navigation ───────────────────────────────
-    dom.titleStartCta?.addEventListener("click", async () => { await showTemplateSelection(); });
-    dom.backBtn.addEventListener("click", () => {
-        if (state.view === "ai_prompt") {
-            state.view = "templates";
-            state.isAiPromptPanelOpen = false;
-            if (state.aiPrompt) state.aiPrompt.panelState = "closed";
-            render();
-            renderTemplates();
-            return;
-        }
-        goBackToUploadChoices();
+    dom.titleStartCta?.addEventListener("click", async () => {
+        try { localStorage.setItem("memebro-onboarding-complete", "1"); } catch (_) { /* quota / private */ }
+        await showTemplateSelection();
     });
+    dom.backBtn.addEventListener("click", goBackToUploadChoices);
 
     dom.saveCta?.addEventListener("click", async () => {
         if (state.view !== "studio") return;
@@ -194,8 +182,6 @@ export function registerEvents(ctx) {
         dom, state, render, renderOverlay,
         getSelectedFaces, selectSingleFace, setStatus, detectFaces,
         getRenderedSize, hasUnsavedStudioEdits, renderTemplates,
-        initializeEditorState: ctx.initializeEditorState,
-        persistEditorHistory: ctx.persistEditorHistory,
         clamp, normalizeBox, STATES,
     });
 

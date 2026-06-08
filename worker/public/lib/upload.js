@@ -17,30 +17,10 @@ const uploadDeps = {
   getRenderedSize: null,
   hasUnsavedStudioEdits: null,
   renderTemplates: null,
-  initializeEditorState: null,
-  persistEditorHistory: null,
   clamp: null,
   normalizeBox: null,
   STATES: null,
 };
-
-function createDefaultFaceRegion(width = 1024, height = 1024) {
-  const regionSize = Math.round(Math.min(width, height) * 0.35);
-  return {
-    x: Math.round((width - regionSize) / 2),
-    y: Math.round((height - regionSize) / 2),
-    width: regionSize,
-    height: regionSize,
-  };
-}
-
-function normalizeAiImageSource(imageSource) {
-  if (!imageSource || typeof imageSource !== "string") return "";
-  if (imageSource.startsWith("data:") || imageSource.startsWith("/") || imageSource.startsWith("http")) {
-    return imageSource;
-  }
-  return `data:image/png;base64,${imageSource}`;
-}
 
 function getDep(key) {
   const value = uploadDeps[key];
@@ -482,66 +462,4 @@ export function moveManualDrag(event) {
   state.manualOffsetY = state.dragOriginOffsetY + (event.clientY - state.dragStartY);
   applyManualTransform();
   renderOverlay();
-}
-
-export async function routeAiImageToFaceSwap(imageSource) {
-  const state = getDep("state");
-  const render = getDep("render");
-  const STATES = getDep("STATES");
-  const dataUri = normalizeAiImageSource(imageSource);
-  if (!dataUri) return;
-
-  const width = 1024;
-  const height = 1024;
-  const dynamicTemplateId = `ai-template-${Date.now()}`;
-  const aiTemplate = {
-    id: dynamicTemplateId,
-    name: "AI Generated",
-    templateImage: dataUri,
-    images: { main: dataUri, width, height },
-    faceRegions: [createDefaultFaceRegion(width, height)],
-  };
-
-  if (!Array.isArray(state.templateCatalog)) state.templateCatalog = [];
-  state.templateCatalog.push(aiTemplate);
-  state.selectedTemplateId = dynamicTemplateId;
-
-  state.error = null;
-  state.faces = [];
-  state.selectedFaceId = null;
-  state.selectedFaceIds = [];
-  state.imageBitmap = null;
-  state.previewUrl = "";
-  state.file = null;
-  state.manualMode = false;
-  state.isAiPromptPanelOpen = false;
-  if (state.aiPrompt) state.aiPrompt.panelState = "closed";
-
-  state.status = STATES.IDLE;
-  state.view = "studio";
-  state.uploadModalOpen = false;
-  state.projectMenuOpen = false;
-  state.showResetConfirmation = false;
-  state.showBackConfirmation = false;
-  state.isEditingMemeText = false;
-  state.isTextSelected = false;
-  state.showTextMore = false;
-
-  if (typeof uploadDeps.initializeEditorState === "function") {
-    uploadDeps.initializeEditorState();
-  } else if (state.editor) {
-    state.editor.templateImage = dataUri;
-    state.editor.generatedImage = "";
-    state.editor.frozenTextItems = [];
-    state.editor.overlayVisible = false;
-    state.editor.historyStack = [];
-    state.editor.futureStack = [];
-    state.editor.initialSnapshot = null;
-  }
-
-  if (typeof uploadDeps.persistEditorHistory === "function") {
-    uploadDeps.persistEditorHistory();
-  }
-
-  render();
 }

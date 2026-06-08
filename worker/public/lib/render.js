@@ -136,7 +136,6 @@ export function render(ctx) {
     const showingHome           = state.view === "home";
     const showingTemplates      = state.view === "templates";
     const showingStudio         = state.view === "studio";
-    const showingAiPrompt       = state.view === "ai_prompt";
     const aiPromptPanelOpen     = state.aiPrompt?.panelState === "open" || state.isAiPromptPanelOpen;
     const selectedTemplate      = getSelectedTemplate();
     const selectedFaceCount     = getSelectedFaces().length;
@@ -159,8 +158,8 @@ export function render(ctx) {
     dom.reviewShell.classList.toggle("hidden", !reviewingCameraPhoto);
     dom.templateScreen.classList.toggle("hidden", !showingTemplates);
     dom.studioScreen.classList.toggle("hidden", !showingStudio);
-    dom.aiPromptScreen?.classList.toggle("hidden", !showingAiPrompt);
     dom.uploadModal.classList.toggle("hidden", !state.uploadModalOpen);
+    dom.aiPromptPanel?.classList.toggle("hidden", !showingStudio || !aiPromptPanelOpen);
     dom.vibeContainer?.classList.toggle("hidden", showingStudio && aiPromptPanelOpen);
     dom.resetConfirmation.classList.toggle("hidden", !showingStudio || !state.showResetConfirmation);
     dom.backConfirmation.classList.toggle("hidden",  !showingStudio || !state.showBackConfirmation);

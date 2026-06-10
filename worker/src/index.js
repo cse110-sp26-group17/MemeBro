@@ -25,6 +25,10 @@ const GATEWAY_PATH = "/api/process";
 const CAPTION_PATH = "/api/caption";
 const IMAGE_PATH = "/api/image";
 const HEALTH_PATH = "/api/health";
+const RECENTS_PATH = "/api/recents";
+const RECENTS_KV_KEY = "memebro:recents";
+const RECENTS_MAX_ITEMS = 20;
+const RECENTS_MAX_BYTES = 1024 * 1024;
 
 /**
  * Use at Worker route boundaries once the response body has already been
@@ -511,6 +515,131 @@ export async function handleHealthRequest(request, env) {
   }
 }
 
+async function readRecentsStorage(store) {
+  const stored = await store.get(RECENTS_KV_KEY);
+  if (!stored) return [];
+
+  const raw = typeof stored === "string"
+    ? stored
+    : typeof stored.text === "function"
+      ? await stored.text()
+      : null;
+
+  if (raw == null) {
+    const err = new Error("Cloud recents storage returned an unsupported value.");
+    err.code = ErrorCodes.SERVER_ERROR;
+    err.retryable = true;
+    throw err;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // Fall through to the structured corrupt-storage error below.
+  }
+
+  const err = new Error("Cloud recents storage contains invalid JSON.");
+  err.code = ErrorCodes.SERVER_ERROR;
+  err.retryable = true;
+  throw err;
+}
+
+async function parseRecentsPayload(request) {
+  const contentLength = Number(request.headers.get("Content-Length") || 0);
+  if (contentLength > RECENTS_MAX_BYTES) {
+    const err = new Error("Recents payload is too large.");
+    err.code = ErrorCodes.PAYLOAD_TOO_LARGE;
+    err.retryable = false;
+    throw err;
+  }
+
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > RECENTS_MAX_BYTES) {
+    const err = new Error("Recents payload is too large.");
+    err.code = ErrorCodes.PAYLOAD_TOO_LARGE;
+    err.retryable = false;
+    throw err;
+  }
+
+  let payload;
+  try {
+    payload = raw ? JSON.parse(raw) : null;
+  } catch {
+    const err = new Error("Recents payload must be valid JSON.");
+    err.code = ErrorCodes.CLIENT_ERROR;
+    err.retryable = false;
+    throw err;
+  }
+
+  const recents = payload?.recents;
+  if (
+    !Array.isArray(recents)
+    || recents.length > RECENTS_MAX_ITEMS
+    || recents.some((item) => !item || typeof item !== "object" || Array.isArray(item))
+  ) {
+    const err = new Error("Recents payload must include up to 20 recent meme objects.");
+    err.code = ErrorCodes.CLIENT_ERROR;
+    err.retryable = false;
+    throw err;
+  }
+
+  return recents;
+}
+
+export async function handleRecentsRequest(request, env) {
+  if (env?.RECENTS_CLOUD_SYNC !== "1") {
+    return jsonResponse(
+      {
+        code: ErrorCodes.FEATURE_DISABLED,
+        message: "Cloud recents sync is disabled.",
+        retryable: false,
+      },
+      503
+    );
+  }
+
+  const store = env?.RECENTS_KV || env?.RECENTS;
+
+  if (!store || typeof store.get !== "function" || typeof store.put !== "function") {
+    return jsonResponse(
+      {
+        code: ErrorCodes.FEATURE_DISABLED,
+        message: "Cloud recents storage is not configured.",
+        retryable: false,
+      },
+      503
+    );
+  }
+
+  try {
+    if (request.method === "GET") {
+      const recents = await readRecentsStorage(store);
+      return jsonResponse({ recents });
+    }
+
+    if (request.method === "PUT") {
+      const recents = await parseRecentsPayload(request);
+      await store.put(RECENTS_KV_KEY, JSON.stringify(recents));
+
+      return jsonResponse({
+        recents,
+        saved: true,
+      });
+    }
+  } catch (err) {
+    return errorResponse(err, env);
+  }
+
+  return jsonResponse(
+    {
+      code: "METHOD_NOT_ALLOWED",
+      message: "Use GET or PUT for /api/recents",
+    },
+    405
+  );
+}
+
 export default {
   /**
    * Cloudflare Worker fetch handler.
@@ -532,6 +661,10 @@ export default {
 
     if (url.pathname === IMAGE_PATH) {
       return handleImageRequest(request, env);
+    }
+
+    if (url.pathname === RECENTS_PATH) {
+      return handleRecentsRequest(request, env);
     }
 
     if (url.pathname === GATEWAY_PATH) {

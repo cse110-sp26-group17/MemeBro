@@ -137,11 +137,14 @@ export function registerEvents(ctx) {
     });
 
     // ── Upload modal ─────────────────────────────
-    dom.openUploadModalCta.addEventListener("click", () => {
+    const openFaceSwapModal = () => {
         state.uploadModalOpen = true;
         aiPrompting.closePanelSilently();
         render();
-    });
+    };
+
+    dom.initialFaceSwapCta?.addEventListener("click", openFaceSwapModal);
+    dom.openUploadModalCta?.addEventListener("click", openFaceSwapModal);
     dom.uploadModalBackdrop.addEventListener("click", () => { state.uploadModalOpen = false; render(); });
     dom.uploadModalClose.addEventListener("click",    () => { state.uploadModalOpen = false; render(); });
     dom.libraryCta.addEventListener("click", () => {
@@ -176,8 +179,10 @@ export function registerEvents(ctx) {
     dom.saveCta?.addEventListener("click", async () => {
         if (state.view !== "studio") return;
         dom.saveCta.disabled = true;
+        if (showToast) showToast("Saving template to recents");
         try {
             await saveCurrentEditorMeme();
+            state.editor.lastSavedRecentImage = state.editor.generatedImage || "";
         } catch (error) {
             setError(error?.code || "SAVE_RECENT_FAILED", error?.message || "Could not save this meme.");
         } finally {

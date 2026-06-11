@@ -66,6 +66,7 @@ export function applyEditorSnapshot(snapshot, { getTemplateMainImage }) {
     if (!snapshot) return;
     state.editor.templateImage      = snapshot.templateImage || getTemplateMainImage();
     state.editor.generatedImage     = snapshot.generatedImage || "";
+    state.editor.lastSavedRecentImage = snapshot.lastSavedRecentImage || "";
     state.editor.overlayText        = snapshot.overlayText ?? DEFAULT_MEME_TEXT;
     state.editor.overlayFontKey     = snapshot.overlayFontKey || DEFAULT_MEME_FONT_KEY;
     state.editor.overlaySizeMode    = snapshot.overlaySizeMode || DEFAULT_MEME_FONT_SIZE_MODE;
@@ -164,6 +165,7 @@ export function initializeEditorState({ getTemplateMainImage, getSelectedTemplat
         overlayVisible:        false,
         frozenTextItems:       [],
     });
+    state.editor.lastSavedRecentImage = "";
     state.editor.historyStack       = [];
     state.editor.futureStack        = [];
     state.showResetConfirmation     = false;
@@ -259,6 +261,7 @@ export function resetEditorToTemplate({ getTemplateMainImage, getSelectedTemplat
 
 export function hasUnsavedStudioEdits() {
     if (state.view !== "studio" || !state.selectedTemplateId) return false;
+    if (state.editor.generatedImage && state.editor.lastSavedRecentImage !== state.editor.generatedImage) return true;
     if (!state.editor.initialSnapshot) return false;
     return !editorSnapshotsEqual(createEditorSnapshot(), state.editor.initialSnapshot);
 }

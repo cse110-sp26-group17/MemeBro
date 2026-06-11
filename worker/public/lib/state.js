@@ -106,5 +106,6 @@ export const state = {
         historyStack: [],
         futureStack: [],
         initialSnapshot: null,
+        lastSavedRecentImage: "",
     },
 };

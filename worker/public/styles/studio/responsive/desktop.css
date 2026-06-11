@@ -2,6 +2,12 @@
     DESKTOP  (≥ 900px)
    ════════════════════════════════════════════ */
 @media (min-width: 900px) {
+    :root {
+        /* Pushes the buttons cleanly outside the 760px canvas 
+           (380px half-width + 60px padding) */
+        --studio-action-rail-x: calc(50vw + 440px);
+    }
+
     /* ── Page shell ── */
     .upload-page {
         padding-top: 22px;
@@ -15,6 +21,7 @@
     /* ── Editor shells ── */
     .image-shell    { max-width: 760px; }
     #overlay-shell  { width: min(60vw, 760px); }
+
 
     .status-text,
     .manual-fit-cta,
@@ -44,16 +51,30 @@
         max-width: 1000px;
         min-height: 100dvh;
         box-sizing: border-box;
-        padding-bottom: 100px;
+        padding: 82px 0 100px;
         align-content: center;
         place-items: center;
         flex-direction: row;
         gap: 20px;
     }
 
+    .upload-page:not(.has-swap-result) .studio-screen {
+        padding-bottom: 32px;
+    }
+
+    .upload-page.has-swap-result .studio-screen {
+        padding-bottom: 156px;
+    }
+
+    .upload-page.has-swap-result .studio-sidebar {
+        top: calc(50% + 81px);
+    }
+
     .studio-template-card {
+        position: relative; /* <-- Added */
         justify-items: center;
         width: 100%;
+        max-width: 760px; /* <-- Added to match canvas */
     }
 
     .studio-template-art {
@@ -62,11 +83,88 @@
         border-radius: 0 !important;
     }
 
+    .upload-page.has-swap-result .studio-template-art {
+        max-height: calc(100dvh - 270px);
+    }
+
+    .studio-template-face-swap {
+        width: min(520px, calc(100vw - 160px));
+        min-height: 70px;
+        margin-top: 20px;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap {
+        position: absolute;
+        top: calc(50% - 81px);
+        left: var(--studio-action-rail-x);
+        right: auto;
+        transform: translate(-50%, -50%);
+        z-index: 32;
+        width: 116px;
+        min-width: 116px;
+        min-height: 144px;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 8px;
+        background: transparent;
+        box-shadow: none;
+        color: var(--color-text);
+        font-size: 0.86rem;
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):hover,
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):focus-visible {
+        transform: translate(-50%, calc(-50% - 2px));
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):active {
+        transform: translate(-50%, -50%);
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):hover .vibe-icon,
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):focus-visible .vibe-icon,
+    .upload-page.has-swap-result .studio-template-face-swap:not(:disabled):active .vibe-icon {
+        transform: scale(1.04);
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap .vibe-icon {
+        display: grid;
+        place-items: center;
+        width: 98px;
+        height: 98px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, #ff4ec7 0%, var(--color-orange) 48%, #ffd340 100%);
+        box-shadow: var(--shadow-md), 0 0 22px var(--color-orange-glow);
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        transition: transform 180ms ease;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap .vibe-label {
+        display: block;
+        max-width: 110px;
+        color: var(--color-text-92);
+        font-size: 0.9rem;
+        font-weight: 900;
+        line-height: 1.05;
+    }
+
     /* ── Sidebar: fixed right panel ── */
     .studio-sidebar {
         position: fixed;
         top: 50%;
-        left: calc(50vw + 320px);
+        left: var(--studio-action-rail-x);
         right: auto;
         transform: translate(-50%, -50%);
         z-index: 32;

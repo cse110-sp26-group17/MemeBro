@@ -249,6 +249,21 @@ progress {
   background: #4338ca;
 }
 
+.download-action {
+  background: linear-gradient(90deg, #0ea5e9 0%, #22d3ee 100%);
+  color: #06111a;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.26);
+}
+
+.download-action:not(:disabled):hover {
+  box-shadow: 0 0 26px rgba(34, 211, 238, 0.44), 0 12px 28px var(--black-28);
+  background: linear-gradient(90deg, #0284c7 0%, #06b6d4 100%);
+}
+
+.download-action:not(:disabled):active {
+  background: #0891b2;
+}
+
 .topbar-actions {
   justify-self: end;
   display: flex;

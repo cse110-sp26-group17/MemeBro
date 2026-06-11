@@ -145,12 +145,15 @@ export function render(ctx) {
     // ── Page-level classes ──
     dom.uploadPage.classList.toggle("home-mode",   showingHome);
     dom.uploadPage.classList.toggle("camera-mode", cameraActive || reviewingCameraPhoto);
+    dom.uploadPage.classList.toggle("has-swap-result", showingStudio && hasSwapResult);
 
     // ── Show/hide sections ──
     dom.titleScreen?.classList.toggle("hidden", !showingHome);
     dom.topbar?.classList.toggle("hidden", showingHome);
     dom.backBtn?.classList.toggle("hidden", showingHome);
     dom.saveCta?.classList.toggle("hidden", !showingStudio);
+    dom.shareCta?.classList.toggle("hidden", !showingStudio);
+    dom.downloadCta?.classList.toggle("hidden", !showingStudio);
     dom.projectMenuCta?.classList.toggle("hidden", !showingStudio);
     dom.projectMenu?.classList.toggle("hidden", !showingStudio || !state.projectMenuOpen);
     dom.projectMenuCta?.setAttribute("aria-expanded", String(showingStudio && state.projectMenuOpen));
@@ -160,8 +163,18 @@ export function render(ctx) {
     dom.studioScreen.classList.toggle("hidden", !showingStudio);
     dom.studioEditorTools?.classList.toggle("hidden", !showingStudio || !hasSwapResult);
     dom.uploadModal.classList.toggle("hidden", !state.uploadModalOpen);
-    dom.aiPromptPanel?.classList.toggle("hidden", !showingStudio || !aiPromptPanelOpen);
-    dom.vibeContainer?.classList.toggle("hidden", showingStudio && aiPromptPanelOpen);
+    if (!hasSwapResult && aiPromptPanelOpen) {
+        state.isAiPromptPanelOpen = false;
+        if (state.aiPrompt) state.aiPrompt.panelState = "closed";
+    }
+    dom.aiPromptCta?.classList.toggle("hidden", !showingStudio || !hasSwapResult);
+    dom.aiPromptCta?.toggleAttribute("disabled", !hasSwapResult);
+    dom.initialFaceSwapCta?.classList.toggle("hidden", !showingStudio || hasSwapResult);
+    dom.initialFaceSwapCta?.toggleAttribute("disabled", hasSwapResult);
+    dom.openUploadModalCta?.classList.toggle("hidden", !showingStudio || !hasSwapResult);
+    dom.openUploadModalCta?.toggleAttribute("disabled", !hasSwapResult);
+    dom.aiPromptPanel?.classList.toggle("hidden", !showingStudio || !hasSwapResult || !aiPromptPanelOpen);
+    dom.vibeContainer?.classList.toggle("hidden", !showingStudio || !hasSwapResult || (showingStudio && aiPromptPanelOpen));
     dom.resetConfirmation.classList.toggle("hidden", !showingStudio || !state.showResetConfirmation);
     dom.backConfirmation.classList.toggle("hidden",  !showingStudio || !state.showBackConfirmation);
     dom.overlayShell.classList.toggle("hidden", !editingPhoto || showingTemplates || showingStudio);

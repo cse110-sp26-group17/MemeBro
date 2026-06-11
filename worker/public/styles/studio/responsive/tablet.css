@@ -11,6 +11,7 @@
 
     /* ── Topbar: icon-only actions ── */
     .save-action,
+    .download-action,
     .topbar-action {
         width: 34px;
         min-width: 34px;
@@ -24,6 +25,10 @@
 
     .save-action {
         color: var(--color-lime);
+    }
+
+    .download-action {
+        color: #67e8f9;
     }
 
     .share-action {
@@ -43,6 +48,7 @@
 
     .save-action .topbar-action-icon,
     .share-action .topbar-action-icon,
+    .download-action .topbar-action-icon,
     .topbar-action .topbar-action-icon {
         width: 20px;
         height: 20px;
@@ -50,6 +56,7 @@
     }
 
     .save-action > span,
+    .download-action > span,
     .topbar-action > span {
         position: absolute;
         width: 1px;
@@ -60,6 +67,7 @@
     }
 
     .save-action:not(:disabled):hover,
+    .download-action:not(:disabled):hover,
     .topbar-action:not(:disabled):hover,
     .secondary.topbar-action:not(:disabled):hover {
         background: transparent;
@@ -79,6 +87,14 @@
         margin: 0;
     }
 
+    .upload-page:not(.has-swap-result) .studio-screen {
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .upload-page.has-swap-result .studio-screen {
+        padding-bottom: calc(255px + env(safe-area-inset-bottom));
+    }
+
     .studio-template-card {
         width: 100%;
         gap: 0;
@@ -89,6 +105,10 @@
         max-height: calc(100dvh - 285px - env(safe-area-inset-bottom));
         border-radius: 0;
         border-inline: none;
+    }
+
+    .upload-page.has-swap-result .studio-template-art {
+        max-height: calc(100dvh - 390px - env(safe-area-inset-bottom));
     }
 
     .studio-sidebar {
@@ -126,19 +146,80 @@
         width: calc(100vw - 48px);
     }
 
+    .studio-template-face-swap {
+        width: min(calc(100vw - 48px), 480px);
+        min-width: 0;
+        min-height: 60px;
+        margin: 16px auto 0;
+        padding: 8px 16px;
+        border-radius: 18px;
+        gap: 8px;
+        font-size: 1.05rem;
+        line-height: 1;
+        white-space: nowrap;
+        background: linear-gradient(90deg, #ff4ec7 0%, var(--color-orange) 48%, #ffd340 100%);
+        color: var(--color-ink);
+        box-shadow: var(--shadow-md), 0 0 18px var(--color-orange-glow);
+    }
+
+    .studio-sidebar-face-swap {
+        min-width: 0;
+        min-height: 50px;
+        margin: 0;
+        padding: 6px 12px;
+        border-radius: 18px;
+        gap: 8px;
+        font-size: 0.95rem;
+        line-height: 1;
+        white-space: nowrap;
+        background: linear-gradient(90deg, #ff4ec7 0%, var(--color-orange) 48%, #ffd340 100%);
+        color: var(--color-ink);
+        box-shadow: var(--shadow-md), 0 0 18px var(--color-orange-glow);
+    }
+
+    .studio-template-face-swap .vibe-icon,
+    .studio-sidebar-face-swap .vibe-icon {
+        width: auto;
+        height: auto;
+        background: rgba(10, 13, 23, 0.16);
+        font-size: 1.16rem;
+    }
+
+    .upload-page.has-swap-result .studio-template-face-swap {
+        position: fixed;
+        left: 12px;
+        right: calc(50vw + 5px);
+        bottom: max(8px, env(safe-area-inset-bottom));
+        z-index: 70;
+        width: auto;
+        min-height: 50px;
+        margin: 0;
+        padding: 6px 12px;
+        border-radius: 18px;
+        font-size: 0.95rem;
+    }
+
+    .upload-page.has-swap-result .vibe-container {
+        left: 12px;
+        right: 12px;
+    }
+
     /* ── Bottom vibe bar ── */
     .vibe-container {
         position: fixed;
-        inset: auto 0 0;
+        left: 12px;
+        right: 12px;
+        bottom: max(8px, env(safe-area-inset-bottom));
         z-index: 70;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
-        padding: 8px 12px max(8px, env(safe-area-inset-bottom));
-        border-top: 1px solid var(--color-white-12);
-        background: var(--surface-mobile-tabbar);
-        backdrop-filter: blur(18px) saturate(170%);
-        box-shadow: var(--shadow-bottom-bar);
+        width: auto;
+        padding: 0;
+        border-top: 0;
+        background: transparent;
+        backdrop-filter: none;
+        box-shadow: none;
     }
 
     .vibe-button {

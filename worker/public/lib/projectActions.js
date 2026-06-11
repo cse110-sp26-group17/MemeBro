@@ -409,6 +409,12 @@ export function configureProjectActions({
         }
     }
 
+    async function downloadMeme() {
+        const blob = await exportCanvasBlob({ dom, state });
+        downloadBlob(blob, getMemeFilename("png"));
+        setSaveStatus("saved", "Downloaded");
+    }
+
     function exportProject() {
         const blob = new Blob([JSON.stringify(createProjectPayload({ state }), null, 2)], { type: "application/json" });
         downloadBlob(blob, getMemeFilename("memebro.json"));
@@ -425,6 +431,9 @@ export function configureProjectActions({
     dom.shareCta?.addEventListener("click", () => {
         shareMeme().catch(() => setSaveStatus("failed", "Failed"));
     });
+    dom.downloadCta?.addEventListener("click", () => {
+        downloadMeme().catch(() => setSaveStatus("failed", "Failed"));
+    });
     dom.exportProjectCta?.addEventListener("click", () => {
         try { exportProject(); } catch { setSaveStatus("failed", "Failed"); }
     });
@@ -439,6 +448,7 @@ export function configureProjectActions({
         restoreAutoSave,
         saveProjectNow,
         shareMeme,
+        downloadMeme,
         exportProject,
         importProjectFile,
     };

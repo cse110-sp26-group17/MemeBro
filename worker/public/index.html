@@ -40,9 +40,23 @@
         <button class="back-btn" type="button" aria-label="Back">← back</button>
         <p class="brand">MEMEBRO</p>
         <div class="topbar-actions">
-          <button id="save-cta" class="save-action" type="button" aria-label="Save meme to Recents" tabindex="15">
+          <button id="share-cta" class="share-action topbar-action" type="button" aria-label="Share meme" tabindex="15">
+            <svg class="topbar-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+              <path d="M16 6l-4-4-4 4M12 2v13" />
+            </svg>
+            <span>Share</span>
+          </button>
+          <button id="download-cta" class="download-action topbar-action" type="button" aria-label="Download meme" tabindex="16">
             <svg class="topbar-action-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3" />
+            </svg>
+            <span>Download</span>
+          </button>
+          <button id="save-cta" class="save-action" type="button" aria-label="Save meme to Recents" tabindex="17">
+            <svg class="topbar-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V7l4-4h10l4 4v12a2 2 0 0 1-2 2Z" />
+              <path d="M7 3v6h10V3M7 21v-8h10v8" />
             </svg>
             <span>Save</span>
           </button>
@@ -188,16 +202,23 @@
               <button id="redo-cta" class="icon-action" type="button" disabled aria-label="Redo" tabindex="12">↷ Redo</button>
               <span id="save-status" class="save-status-indicator" role="status" aria-live="polite"></span>
             </div>
-            <button id="ai-prompt-cta" class="pink-action edit-with-ai-cta" type="button" tabindex="13">Edit with AI</button>
             <button id="reset-cta" class="danger-action" type="button" tabindex="14">⟲ Reset</button>
           </section>
           </section>
         </article>
 
+        <button id="initial-face-swap-cta" class="primary studio-template-face-swap" type="button">
+          <span class="vibe-icon" aria-hidden="true">◎</span>
+          <span class="vibe-label">Face Swap</span>
+        </button>
+
         <div class="studio-sidebar">
           <section class="studio-actions vibe-container" aria-label="Template actions">
-            <button id="share-cta" class="share-action studio-action vibe-button studio-share-action" type="button" aria-label="Share meme"><span class="vibe-icon" aria-hidden="true">⤴</span><span class="vibe-label">Share</span></button>
-            <button id="open-upload-modal-cta" class="primary studio-action vibe-button" type="button"><span class="vibe-icon" aria-hidden="true">◎</span><span class="vibe-label">Face Swap</span></button>
+            <button id="ai-prompt-cta" class="pink-action studio-action vibe-button" type="button" tabindex="13"><span class="vibe-icon" aria-hidden="true">✣</span><span class="vibe-label">AI Prompt</span></button>
+            <button id="open-upload-modal-cta" class="studio-action vibe-button studio-sidebar-face-swap" type="button">
+              <span class="vibe-icon" aria-hidden="true">◎</span>
+              <span class="vibe-label">Face Swap</span>
+            </button>
           </section>
         </div>
         <section id="ai-prompt-panel" class="ai-prompt-panel hidden" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" aria-describedby="ai-prompt-description">
@@ -241,7 +262,7 @@
         <section id="back-confirmation" class="reset-confirmation hidden" aria-live="polite" aria-modal="true" role="dialog">
           <div id="back-confirmation-backdrop" class="reset-confirmation-backdrop"></div>
           <div class="reset-confirmation-card">
-            <p>You have unsaved template edits. Going back will lose all progress. Continue?</p>
+            <p>You have not saved this meme to Recents. Going back will lose your progress. Continue?</p>
             <div class="reset-confirmation-actions">
               <button id="back-cancel-cta" class="secondary" type="button">Stay</button>
               <button id="back-confirm-cta" class="danger-action" type="button">Go Back</button>

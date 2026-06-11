@@ -478,6 +478,7 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
 
     const metadata = JSON.parse(localStorage.getItem("recent-memes"));
     expect(metadata).toHaveLength(1);
+    expect(metadata[0].id).toBe(`template-${state.selectedTemplateId}`);
     expect(metadata[0].currentImage).toBe("/generated/saved-by-button.png");
     expect(metadata[0].mode).toBe("face_swap");
     expect(metadata[0].thumbnail).toEqual({
@@ -504,6 +505,42 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
       visible: true,
     });
     expect(recent.thumbnail.blob.type).toBe("image/webp");
+  });
+
+  test("custom: saving the same template updates its existing recent meme", async () => {
+    mockRecentThumbnailExport();
+    const { __testHooks } = await loadApp();
+    const { getRecentMeme } = await import("../public/js/recents.js");
+    await settleApp();
+    const { state, dom, render } = __testHooks;
+
+    seedStudioEditorState(state);
+    state.editor.generatedImage = "/generated/first-save.png";
+    state.editor.overlayText = "first save";
+    render();
+
+    dom.saveCta.click();
+    await vi.waitFor(() => {
+      expect(dom.saveCta.disabled).toBe(false);
+    });
+
+    state.editor.generatedImage = "/generated/second-save.png";
+    state.editor.overlayText = "second save";
+    render();
+
+    dom.saveCta.click();
+    await vi.waitFor(() => {
+      expect(dom.saveCta.disabled).toBe(false);
+    });
+
+    const metadata = JSON.parse(localStorage.getItem("recent-memes"));
+    expect(metadata).toHaveLength(1);
+    expect(metadata[0].id).toBe(`template-${state.selectedTemplateId}`);
+    expect(metadata[0].currentImage).toBe("/generated/second-save.png");
+
+    const recent = await getRecentMeme(metadata[0].id);
+    expect(recent.snapshot.currentImage).toBe("/generated/second-save.png");
+    expect(recent.snapshot.editorSnapshot.overlayText).toBe("second save");
   });
 
   test("custom: save button surfaces a visible error when no current image exists", async () => {
@@ -809,6 +846,73 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
     expect(dom.memeTextPreview.textContent).toBe("fresh text");
   });
 
+  test("custom: back warns after face swap when meme has not been saved to recents", async () => {
+    mockFaceCropCanvas("image/png");
+    global.fetch = vi.fn(async (url) => {
+      if (url === "/templates.json") {
+        return { json: async () => ({ templates: catalog.templates }) };
+      }
+      if (url === "/api/process") {
+        return { ok: true, json: async () => ({ generatedImageUrl: "/generated/unsaved-swap.png" }) };
+      }
+      return { ok: true, json: async () => ({}) };
+    });
+
+    const { __testHooks } = await loadApp();
+    await settleApp();
+    const { state, dom, render, submitSelectedFace } = __testHooks;
+
+    seedStudioEditorState(state, catalog.templates[0].id, { swapImage: false });
+    state.status = "ready";
+    seedSelectedFaceCrop(state, {
+      face: { id: "face-0", boxNatural: { x: 0, y: 0, width: 10, height: 10 } },
+    });
+    render();
+
+    await submitSelectedFace();
+    dom.backBtn.click();
+
+    expect(state.showBackConfirmation).toBe(true);
+    expect(dom.backConfirmation.classList.contains("hidden")).toBe(false);
+    expect(dom.backConfirmation.textContent).toContain("not saved this meme to Recents");
+  });
+
+  test("custom: back does not warn after face swap once meme is saved to recents", async () => {
+    mockRecentThumbnailExport();
+    mockFaceCropCanvas("image/png");
+    global.fetch = vi.fn(async (url) => {
+      if (url === "/templates.json") {
+        return { json: async () => ({ templates: catalog.templates }) };
+      }
+      if (url === "/api/process") {
+        return { ok: true, json: async () => ({ generatedImageUrl: "/generated/saved-swap.png" }) };
+      }
+      return { ok: true, json: async () => ({}) };
+    });
+
+    const { __testHooks } = await loadApp();
+    await settleApp();
+    const { state, dom, render, submitSelectedFace } = __testHooks;
+
+    seedStudioEditorState(state, catalog.templates[0].id, { swapImage: false });
+    state.status = "ready";
+    seedSelectedFaceCrop(state, {
+      face: { id: "face-0", boxNatural: { x: 0, y: 0, width: 10, height: 10 } },
+    });
+    render();
+
+    await submitSelectedFace();
+    dom.saveCta.click();
+    await vi.waitFor(() => {
+      expect(dom.saveCta.disabled).toBe(false);
+    });
+
+    dom.backBtn.click();
+
+    expect(state.showBackConfirmation).toBe(false);
+    expect(dom.backConfirmation.classList.contains("hidden")).toBe(true);
+  });
+
   test("custom: undo restores the previous snapshot and reset clears history", async () => {
     mockFaceCropCanvas("image/png");
     global.fetch = vi.fn(async (url) => {
@@ -865,7 +969,7 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
     seedStudioEditorState(state);
     render();
 
-    expect(dom.aiPromptCta.closest("#studio-editor-tools")).not.toBeNull();
+    expect(dom.aiPromptCta.closest(".studio-actions")).not.toBeNull();
     expect(dom.studioEditorTools.classList.contains("hidden")).toBe(false);
 
     dom.aiPromptCta.click();
@@ -890,6 +994,29 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
     expect(state.view).toBe("studio");
     expect(state.aiPrompt.panelState).toBe("closed");
     expect(dom.aiPromptPanel.classList.contains("hidden")).toBe(true);
+  });
+
+  test("custom: AI prompt action stays unavailable until after face swap", async () => {
+    const { __testHooks } = await loadApp();
+    await settleApp();
+    const { state, dom, render } = __testHooks;
+
+    seedStudioEditorState(state, catalog.templates[0].id, { swapImage: false });
+    render();
+
+    expect(dom.aiPromptCta.classList.contains("hidden")).toBe(true);
+    expect(dom.aiPromptCta.hasAttribute("disabled")).toBe(true);
+
+    dom.aiPromptCta.click();
+
+    expect(state.aiPrompt.panelState).toBe("closed");
+    expect(dom.aiPromptPanel.classList.contains("hidden")).toBe(true);
+
+    state.editor.generatedImage = "/generated/after-swap.png";
+    render();
+
+    expect(dom.aiPromptCta.classList.contains("hidden")).toBe(false);
+    expect(dom.aiPromptCta.hasAttribute("disabled")).toBe(false);
   });
 
   test("custom: text more button opens Copy/Paste/Link menu", async () => {
@@ -1162,13 +1289,15 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
     render();
     dom.saveCta.click();
 
+    expect(document.querySelector(".memebro-toast")?.textContent).toBe("Saving template to recents");
+
     await vi.waitFor(() => {
       expect(JSON.parse(localStorage.getItem("recent-memes"))).toHaveLength(1);
     });
     expect(globalThis.__MEMEBRO_EXPORT_BLOB__).not.toHaveBeenCalled();
   });
 
-  test("custom: studio actions use Face Swap label and keep project utilities in a menu", async () => {
+  test("custom: studio actions put export buttons in the topbar and keep project utilities in a menu", async () => {
     const { __testHooks } = await loadApp();
     await settleApp();
     const { state, dom, render } = __testHooks;
@@ -1178,7 +1307,10 @@ describe("US-03 scenario 7.4: inline text editing + face-swap loader", () => {
 
     expect(dom.openUploadModalCta.textContent).toContain("Face Swap");
     expect(dom.shareCta.textContent).toContain("Share");
-    expect(dom.shareCta.closest(".studio-actions")).not.toBeNull();
+    expect(dom.shareCta.closest(".topbar-actions")).not.toBeNull();
+    expect(dom.downloadCta.textContent).toContain("Download");
+    expect(dom.downloadCta.closest(".topbar-actions")).not.toBeNull();
+    expect(dom.aiPromptCta.closest(".studio-actions")).not.toBeNull();
     expect(dom.projectMenu.classList.contains("hidden")).toBe(true);
 
     dom.projectMenuCta.click();

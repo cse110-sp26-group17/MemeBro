@@ -26,3 +26,46 @@
   color: var(--color-ink);
   box-shadow: 0 0 24px rgba(240, 68, 189, 0.25);
 }
+
+.studio-template-face-swap {
+  width: min(94%, calc(var(--studio-canvas-max) - 16px));
+  min-height: 64px;
+  margin: 18px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 22px;
+  font-size: clamp(1.08rem, 2.8vw, 1.35rem);
+  font-weight: 900;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.studio-template-face-swap:not(:disabled):hover,
+.studio-template-face-swap:not(:disabled):focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(240, 68, 189, 0.25);
+  filter: brightness(1.03);
+}
+
+.studio-template-face-swap:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 0 16px rgba(240, 68, 189, 0.2);
+}
+
+.studio-template-face-swap:not(:disabled):hover .vibe-icon,
+.studio-template-face-swap:not(:disabled):focus-visible .vibe-icon,
+.studio-template-face-swap:not(:disabled):active .vibe-icon {
+  transform: scale(1.04);
+}
+
+.studio-template-face-swap .vibe-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(10, 13, 23, 0.16);
+  font-size: 1.35rem;
+  transition: transform 180ms ease;
+}

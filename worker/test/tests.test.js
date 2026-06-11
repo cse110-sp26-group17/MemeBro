@@ -372,7 +372,7 @@ describe("Grid UI", () => {
     expect(getTemplateCards(dom)).toHaveLength(templates.length);
   });
 
-  test("recents persist across sessions", async () => {
+  test("clicking templates does not add them to recents", async () => {
     let currentTime = 1_000;
     vi.spyOn(Date, "now").mockImplementation(() => {
       currentTime += 1_000;
@@ -396,11 +396,7 @@ describe("Grid UI", () => {
     mountAppHtml();
     await renderGrid(1440);
 
-    expect(getRecentUsageIds()).toEqual([
-      getTrendingTemplates()[0].id,
-      getTrendingTemplates()[2].id,
-      getTrendingTemplates()[4].id,
-    ]);
+    expect(getRecentUsageIds()).toEqual([]);
   });
 
   test("trending tab is consistent across sessions", async () => {

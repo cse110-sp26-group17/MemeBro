@@ -123,12 +123,12 @@ function drawTextLayer(ctx, layer, canvasWidth, canvasHeight, scale = 1) {
     const fontFamily = getMemeFontFamily(layer.fontKey);
     const maxWidth = Math.max(40, (Number(layer.widthPct) || 48) / 100 * canvasWidth);
     const lineHeight = fontPx * 1.18;
+    ctx.font = `${fontStyle}${fontWeight}${fontPx}px ${fontFamily}`;
     const lines = wrapCanvasText(ctx, layer.text, maxWidth);
 
     ctx.save();
     ctx.translate((Number(layer.x) || 50) / 100 * canvasWidth, (Number(layer.y) || 80) / 100 * canvasHeight);
     ctx.rotate(((Number(layer.rotation) || 0) * Math.PI) / 180);
-    ctx.font = `${fontStyle}${fontWeight}${fontPx}px ${fontFamily}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = layer.color?.startsWith?.("#") ? layer.color : getMemeTextColor(layer.color);

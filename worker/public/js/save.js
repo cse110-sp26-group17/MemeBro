@@ -81,6 +81,30 @@ function getTransformation(editorSnapshot) {
   };
 }
 
+function hashRecentSource(value = "") {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = ((hash << 5) - hash + value.charCodeAt(index)) | 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+/**
+ * Builds a stable recents key so saving the same template updates one record.
+ *
+ * @param {object} options - Current save state.
+ * @param {object} options.state - App state object.
+ * @param {object} options.editorSnapshot - Current editor snapshot.
+ * @returns {string} Stable recent meme ID.
+ */
+function getStableRecentMemeId({ state, editorSnapshot }) {
+  const templateId = editorSnapshot.selectedTemplateId || state.selectedTemplateId;
+  if (templateId) return `template-${templateId}`;
+
+  const sourceImage = editorSnapshot.templateImage || state.editor.templateImage || editorSnapshot.generatedImage || state.editor.generatedImage || "";
+  return `template-custom-${hashRecentSource(sourceImage)}`;
+}
+
 /**
  * Saves the current editor state as a recent meme.
  *
@@ -112,6 +136,7 @@ export async function saveCurrentMeme({
   const currentImage = getCurrentImage({ state, dom, editorSnapshot });
 
   return storage.save({
+    id: getStableRecentMemeId({ state, editorSnapshot }),
     currentImage,
     editorSnapshot,
     historyStack: cloneData(state.editor.historyStack) || [],

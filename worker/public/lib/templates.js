@@ -432,7 +432,6 @@ export async function openStudioForTemplate(templateId, { recordTemplateUsage: r
         if (!ok) return;
     }
     state.selectedTemplateId   = templateId;
-    recordUsage(templateId);
     state.status               = S.IDLE;
     state.view                 = "studio";
     state.uploadModalOpen      = false;

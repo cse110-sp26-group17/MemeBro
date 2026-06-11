@@ -52,6 +52,7 @@ describe("saveCurrentMeme", () => {
 
     expect(result.metadata.id).toBe("recent-1");
     expect(storage.save).toHaveBeenCalledWith({
+      id: "template-drake-hotline-bling",
       currentImage: "/generated/meme.png",
       editorSnapshot: expect.objectContaining({
         overlayText: "saved text",

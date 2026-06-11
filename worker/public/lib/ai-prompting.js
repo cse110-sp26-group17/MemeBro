@@ -160,6 +160,11 @@ export function configureAiPrompting({ dom, state, render, recordEditorSnapshot 
     }
 
     function openPanel() {
+        if (!state.editor?.generatedImage) {
+            setPanelOpen(false);
+            render();
+            return;
+        }
         setPanelOpen(true);
         render();
         syncKeyboardOffset();

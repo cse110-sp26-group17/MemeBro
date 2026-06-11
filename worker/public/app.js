@@ -125,6 +125,7 @@ async function openStudioForRecentMeme(recentMemeId) {
     : [];
   state.editor.initialSnapshot = state.editor.historyStack[0] || restoredEditorSnapshot;
   Editor.applyEditorSnapshot(restoredEditorSnapshot, { getTemplateMainImage });
+  state.editor.lastSavedRecentImage = state.editor.generatedImage || "";
   Editor.persistEditorHistory();
   render();
   return recent;

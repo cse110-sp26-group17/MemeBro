@@ -4,6 +4,7 @@ MemeBro is a meme generation platform built on Cloudflare Workers.
 
 ## Project Links
 - YouTube demo: https://youtu.be/yxKbU6RzruE
+- Public Video: https://youtu.be/ox8PpIkMalA
 - Frontend: `/public/index.html`
 - API Gateway: `/src/index.js`
 
